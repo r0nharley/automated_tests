@@ -1,0 +1,80 @@
+/*
+ * Created by Ron Harley
+ * User: CC1442
+ * Date: 8/29/2014
+ * Time: 2:02 PM
+ * 
+ * To change this template use Tools | Options | Coding | Edit Standard Headers.
+ */
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Drawing;
+using System.Threading;
+using WinForms = System.Windows.Forms;
+
+using Ranorex;
+using Ranorex.Core;
+using Ranorex.Core.Testing;
+
+namespace CCApps
+{
+    [TestModule("06162D32-F553-4569-ADF3-B5B335C4F735", ModuleType.UserCode, 1)]
+    public class SendMessage : ITestModule
+    {
+        public static CCApps repo = CCApps.Instance;
+		
+        public SendMessage()
+        {
+            
+        }
+       
+        void ITestModule.Run()
+        {
+            Mouse.DefaultMoveTime = 75;
+            Keyboard.DefaultKeyPressTime = 10;
+            Delay.SpeedFactor = 1.0;
+            
+            repo.CCCommunity.Navigation.aHomeButton.Click();
+            repo.CCCommunity.Navigation.aMessageButton.Click();
+            
+           
+         
+            
+            {
+            	
+            	if (repo.CCCommunity.Content.MessageListVerifyAfterInfo.Exists())
+            	{
+            		//repo.CCCommuninity.Content.MessageListVerifyAfter.Click();
+            		Report.Info("Message Exists");
+            		repo.CCCommuninity.Content.MessageListVerifyAfter.Click();
+            		//repo.CCCommuninity.Content.MessageCheckbox.Click();
+            		Delay.Milliseconds (1800);
+            		repo.CCCommuninity.Content.DeleteMessage.Click();
+            		Delay.Milliseconds (1800);
+            		Report.Info("Message Deleted");
+            		bool MessageDeleted = Validate.Exists(repo.CCCommuninity.Content.MessageListVerifyAfter,"Check Object'{0}'",true);
+            		
+            
+            	}else{
+            		Report.Info("No Automation Messages exist, creating new one");
+            		repo.CCCommuninity.Content.xNewMessage.Click();
+					repo.CCCommuninity.Content.ySelectMessageProvider.Click();
+					repo.CCCommuninity.Content.ySelectMessageProvider.PressKeys("{d}{d}");
+					Report.Info ("Message provider Selected");
+					Report.Screenshot();
+			
+					repo.CCCommuninity.Content.zMessageSubject.PressKeys("Automation Test Message");
+					repo.CCCommuninity.Content.MessageBody.Click();
+					repo.CCCommuninity.Content.MessageBody.PressKeys("I am a test there are many like me, but this one tests messages.");
+					repo.CCCommuninity.Content.SendMessage.Click();
+					//validate that the sent message is displayed in the message list
+					bool ValidationExists = Validate.Exists(repo.CCCommuninity.Content.MessageListVerifyAfter,"Check Object '{0}'",false);
+            }
+            	
+            	    
+      }
+    }
+  }
+}
